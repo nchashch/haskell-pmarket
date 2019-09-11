@@ -1,0 +1,59 @@
+name:                prediction-market-backend
+version:             0.1.0.0
+github:              "nchashch/prediction-market-backend"
+license:             BSD3
+author:              "Nikita Chashchinskii"
+maintainer:          "nikita.chashchinskii@gmail.com"
+copyright:           "2019 Nikita Chashchinskii"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/nchashch/prediction-market-backend#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- servant-server
+- servant
+- aeson
+- time
+- wai
+- warp
+- beam-core
+- beam-sqlite
+- sqlite-simple
+- text
+- mtl
+
+library:
+  source-dirs: src
+
+executables:
+  prediction-market-backend-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - prediction-market-backend
+
+tests:
+  prediction-market-backend-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - prediction-market-backend
