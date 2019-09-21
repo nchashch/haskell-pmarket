@@ -10,7 +10,7 @@ import GHC.Generics
 
 type PositionAPI =
     "markets" :> Capture "marketid" Int :> "positions" :> Get '[JSON] [Position] :<|>
-    "markets" :> Capture "marketid" Int :> "positions" :> Capture "positionid" Int :> Get '[JSON] Position
+    "markets" :> Capture "marketid" Int :> "positions" :> Capture "positionid" Int :> Get '[JSON] (Maybe Position)
 
 positionServer :: Server PositionAPI
 positionServer = getPositions :<|> getPosition
@@ -18,9 +18,5 @@ positionServer = getPositions :<|> getPosition
         getPositions :: Int -> Handler [Position]
         getPositions _ = return []
 
-        getPosition :: Int -> Int -> Handler Position
-        getPosition _ _ = return Position {
-          _positionId = 1,
-          _outcome = OutcomeId 1,
-          _amount = 100
-                                          }
+        getPosition :: Int -> Int -> Handler (Maybe Position)
+        getPosition _ _ = return Nothing

@@ -1,33 +1,20 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Models.Outcome where
 
 import Models.Market
-import Data.Aeson
-import Database.Beam
+import Database.Persist
+import Database.Persist.TH
 
-type Money = Int
-
-data OutcomeT f
-    = Outcome
-    { _outcomeId :: C f Int
-    , _market :: PrimaryKey MarketT f
-    , _probability :: C f Float
-    , _outstanding :: C f Int }
-    deriving (Generic, Beamable)
-
-type Outcome = OutcomeT Identity
-deriving instance Show Outcome; deriving instance Eq Outcome
-instance FromJSON Outcome; instance ToJSON Outcome
-
-type OutcomeId = PrimaryKey OutcomeT Identity
-deriving instance Show OutcomeId; deriving instance Eq OutcomeId
-instance FromJSON OutcomeId; instance ToJSON OutcomeId
-
-instance Table OutcomeT where
-    data PrimaryKey OutcomeT f = OutcomeId (C f Int) deriving (Generic, Beamable)
-    primaryKey = OutcomeId . _outcomeId
+mkPersist sqlSettings [persistLowerCase|
+Outcome json
+    marketId MarketId
+    outstanding Int
+    deriving Show
+|]

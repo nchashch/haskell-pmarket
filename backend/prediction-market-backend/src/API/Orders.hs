@@ -12,7 +12,7 @@ type OrderAPI =
     "markets" :> Capture "marketid" Int :> "outcomes" :> Capture "outcomeid" Int :> "orders" :> Get '[JSON] [Order] :<|>
     -- Should require authentication and authorization
     "markets" :> Capture "marketid" Int :> "outcomes" :> Capture "outcomeid" Int :> "orders" :> Capture "orderid" Int :> ReqBody '[JSON] Order :> Post '[JSON] Order :<|>
-    "markets" :> Capture "marketid" Int :> "outcomes" :> Capture "outcomeid" Int :> "orders" :> Capture "orderid" Int :>  Get '[JSON] Order
+    "markets" :> Capture "marketid" Int :> "outcomes" :> Capture "outcomeid" Int :> "orders" :> Capture "orderid" Int :>  Get '[JSON] (Maybe Order)
 
 orderServer :: Server OrderAPI
 orderServer = getOrders :<|> postOrder :<|> getOrder
@@ -23,9 +23,5 @@ orderServer = getOrders :<|> postOrder :<|> getOrder
         postOrder :: Int -> Int -> Int -> Order -> Handler Order
         postOrder _ _ _ = return
 
-        getOrder :: Int -> Int -> Int -> Handler Order
-        getOrder _ _ _ = return Order {
-          _orderId = 1,
-          _outcome = OutcomeId 1,
-          _amount = 100
-                                      }
+        getOrder :: Int -> Int -> Int -> Handler (Maybe Order)
+        getOrder _ _ _ = return Nothing

@@ -27,9 +27,9 @@ dependencies:
 - time
 - wai
 - warp
-- beam-core
-- beam-migrate
-- beam-postgres
+- persistent
+- persistent-template
+- persistent-sqlite
 - text
 - mtl
 

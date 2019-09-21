@@ -1,32 +1,21 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Models.Market where
 
-import Data.Aeson
-import Database.Beam
+import Database.Persist
+import Database.Persist.TH
 
 type Money = Int
 
-data MarketT f
-    = Market
-    { _marketId :: C f Int
-    , _cash :: C f Money
-    , _b :: C f Int }
-    deriving (Generic, Beamable)
-
-
-type Market = MarketT Identity
-deriving instance Show Market; deriving instance Eq Market
-instance FromJSON Market; instance ToJSON Market
-
-type MarketId = PrimaryKey MarketT Identity
-deriving instance Show MarketId; deriving instance Eq MarketId
-instance FromJSON MarketId; instance ToJSON MarketId
-
-instance Table MarketT where
-    data PrimaryKey MarketT f = MarketId (C f Int) deriving (Generic, Beamable)
-    primaryKey = MarketId . _marketId
+mkPersist sqlSettings [persistLowerCase|
+Market json
+    cash Money
+    b Int
+    deriving Show
+|]

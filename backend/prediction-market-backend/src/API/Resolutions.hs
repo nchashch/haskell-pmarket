@@ -12,7 +12,7 @@ import GHC.Generics
 type ResolutionAPI =
     "resolutions" :> Get '[JSON] [Resolution] :<|>
     "resolutions" :> ReqBody '[JSON] Resolution :> Post '[JSON] Resolution :<|>
-    "resolutions" :> Capture "resolutionid" Int :> Get '[JSON] Resolution
+    "resolutions" :> Capture "resolutionid" Int :> Get '[JSON] (Maybe Resolution)
 
 resolutionServer :: Server ResolutionAPI
 resolutionServer = getResolutions :<|> postResolution :<|> getResolution
@@ -23,9 +23,5 @@ resolutionServer = getResolutions :<|> postResolution :<|> getResolution
         postResolution :: Resolution -> Handler Resolution
         postResolution = return
 
-        getResolution :: Int -> Handler Resolution
-        getResolution _ = return $ Resolution {
-          _resolutionId = 1,
-          _resolvedMarket = MarketId 1,
-          _actualOutcome = OutcomeId 1
-                                              }
+        getResolution :: Int -> Handler (Maybe Resolution)
+        getResolution _ = return Nothing

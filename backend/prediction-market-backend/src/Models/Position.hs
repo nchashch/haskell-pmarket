@@ -1,32 +1,20 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs                      #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings          #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Models.Position where
 
 import Models.Outcome
-import Data.Aeson
-import Database.Beam
+import Database.Persist
+import Database.Persist.TH
 
-type Money = Int
-
-data PositionT f
-    = Position
-    { _positionId :: C f Int
-    , _outcome :: PrimaryKey OutcomeT f
-    , _amount :: C f Int }
-    deriving (Generic, Beamable)
-
-type Position = PositionT Identity
-deriving instance Show Position; deriving instance Eq Position
-instance FromJSON Position; instance ToJSON Position
-
-type PositionId = PrimaryKey PositionT Identity
-deriving instance Show PositionId; deriving instance Eq PositionId
-instance FromJSON PositionId; instance ToJSON PositionId
-
-instance Table PositionT where
-    data PrimaryKey PositionT f = PositionId (C f Int) deriving (Generic, Beamable)
-    primaryKey = PositionId . _positionId
+mkPersist sqlSettings [persistLowerCase|
+Position json
+    outcomeId OutcomeId
+    amount Int
+    deriving Show
+|]

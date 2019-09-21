@@ -24,7 +24,6 @@ marketServer = getMarkets :<|> postMarket :<|> getMarket
 
         getMarket :: Int -> Handler Market
         getMarket _ = return Market {
-          _marketId = 1,
-          _cash = 100,
-          _b = 1
+          marketCash = 100,
+          marketB = 1
                                     }
