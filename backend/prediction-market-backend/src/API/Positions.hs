@@ -2,11 +2,9 @@
 {-# LANGUAGE TypeOperators #-}
 module API.Positions where
 
-import Models.Position
-import Models.Outcome
+import Models
 import Data.Aeson
 import Servant
-import GHC.Generics
 
 type PositionAPI =
     "markets" :> Capture "marketid" Int :> "positions" :> Get '[JSON] [Position] :<|>

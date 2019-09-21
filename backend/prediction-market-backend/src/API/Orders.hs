@@ -2,11 +2,9 @@
 {-# LANGUAGE TypeOperators #-}
 module API.Orders where
 
-import Models.Order
-import Models.Outcome
+import Models
 import Data.Aeson
 import Servant
-import GHC.Generics
 
 type OrderAPI =
     "markets" :> Capture "marketid" Int :> "outcomes" :> Capture "outcomeid" Int :> "orders" :> Get '[JSON] [Order] :<|>

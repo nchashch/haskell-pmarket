@@ -2,10 +2,10 @@
 {-# LANGUAGE TypeOperators #-}
 module API.Markets where
 
-import Models.Market
+import Models
 import Data.Aeson
 import Servant
-import GHC.Generics
+import Database.Persist
 
 type MarketAPI =
     "markets" :> Get '[JSON] [Market] :<|>
@@ -26,4 +26,4 @@ marketServer = getMarkets :<|> postMarket :<|> getMarket
         getMarket _ = return Market {
           marketCash = 100,
           marketB = 1
-                                    }
+          }
