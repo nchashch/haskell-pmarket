@@ -28,8 +28,8 @@ dependencies:
 - wai
 - warp
 - beam-core
-- beam-sqlite
-- sqlite-simple
+- beam-migrate
+- beam-postgres
 - text
 - mtl
 

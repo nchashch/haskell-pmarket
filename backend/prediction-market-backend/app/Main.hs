@@ -12,4 +12,6 @@ import Network.Wai.Handler.Warp
 import API
 
 main :: IO ()
-main = run 8080 predictionMarket
+main = do
+  putStrLn "Prediction market backend server is running."
+  run 8080 predictionMarket
