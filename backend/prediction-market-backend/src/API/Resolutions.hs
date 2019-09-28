@@ -5,20 +5,21 @@ module API.Resolutions where
 import Models
 import Data.Aeson
 import Servant
+import Config
 
 type ResolutionAPI =
     "resolutions" :> Get '[JSON] [Resolution] :<|>
     "resolutions" :> ReqBody '[JSON] Resolution :> Post '[JSON] Resolution :<|>
     "resolutions" :> Capture "resolutionid" Int :> Get '[JSON] (Maybe Resolution)
 
-resolutionServer :: Server ResolutionAPI
+resolutionServer :: ServerT ResolutionAPI App
 resolutionServer = getResolutions :<|> postResolution :<|> getResolution
-    where
-        getResolutions :: Handler [Resolution]
-        getResolutions = return []
 
-        postResolution :: Resolution -> Handler Resolution
-        postResolution = return
+getResolutions :: App [Resolution]
+getResolutions = return []
 
-        getResolution :: Int -> Handler (Maybe Resolution)
-        getResolution _ = return Nothing
+postResolution :: Resolution -> App Resolution
+postResolution = return
+
+getResolution :: Int -> App (Maybe Resolution)
+getResolution _ = return Nothing

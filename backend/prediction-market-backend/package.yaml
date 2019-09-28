@@ -29,7 +29,8 @@ dependencies:
 - warp
 - persistent
 - persistent-template
-- persistent-sqlite
+- persistent-postgresql
+- monad-logger
 - text
 - mtl
 

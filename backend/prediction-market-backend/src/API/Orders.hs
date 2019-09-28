@@ -5,6 +5,7 @@ module API.Orders where
 import Models
 import Data.Aeson
 import Servant
+import Config
 
 type OrderAPI =
     "markets" :> Capture "marketid" Int :> "outcomes" :> Capture "outcomeid" Int :> "orders" :> Get '[JSON] [Order] :<|>
@@ -12,14 +13,14 @@ type OrderAPI =
     "markets" :> Capture "marketid" Int :> "outcomes" :> Capture "outcomeid" Int :> "orders" :> Capture "orderid" Int :> ReqBody '[JSON] Order :> Post '[JSON] Order :<|>
     "markets" :> Capture "marketid" Int :> "outcomes" :> Capture "outcomeid" Int :> "orders" :> Capture "orderid" Int :>  Get '[JSON] (Maybe Order)
 
-orderServer :: Server OrderAPI
+orderServer :: ServerT OrderAPI App
 orderServer = getOrders :<|> postOrder :<|> getOrder
-    where
-        getOrders :: Int -> Int -> Handler [Order]
-        getOrders _ _ = return []
 
-        postOrder :: Int -> Int -> Int -> Order -> Handler Order
-        postOrder _ _ _ = return
+getOrders :: Int -> Int -> App [Order]
+getOrders _ _ = return []
 
-        getOrder :: Int -> Int -> Int -> Handler (Maybe Order)
-        getOrder _ _ _ = return Nothing
+postOrder :: Int -> Int -> Int -> Order -> App Order
+postOrder _ _ _ = return
+
+getOrder :: Int -> Int -> Int -> App (Maybe Order)
+getOrder _ _ _ = return Nothing
