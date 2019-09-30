@@ -23,19 +23,9 @@ getMarkets :: App [Entity Market]
 getMarkets = runDb $ selectList [] []
 
 getMarket :: MarketId -> App (Entity Market)
-getMarket id = do
-  market <- runDb selectMarket
+getMarket marketId = do
+  market <- runDb $ getEntity marketId
   maybe (throwError err404) return market
-  where
-    selectMarket :: SqlPersistT IO (Maybe (Entity Market))
-    selectMarket = do
-      markets <- selectList [MarketId ==. id] []
-      return $ maybeHead markets
-
-    maybeHead :: [a] -> Maybe a
-    maybeHead xs = case xs of
-          [] -> Nothing
-          [x] -> Just x
 
 postMarket :: Market -> App MarketId
 postMarket market = runDb $ do

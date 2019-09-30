@@ -2,24 +2,28 @@
 {-# LANGUAGE TypeOperators #-}
 module API.Resolutions where
 
-import Models
-import Data.Aeson
-import Servant
 import Config
+import Data.Aeson
+import Data.Maybe (maybe)
+import Database.Persist
+import Models
+import Servant
 
 type ResolutionAPI =
-    "resolutions" :> Get '[JSON] [Resolution] :<|>
-    "resolutions" :> ReqBody '[JSON] Resolution :> Post '[JSON] Resolution :<|>
-    "resolutions" :> Capture "resolutionid" Int :> Get '[JSON] (Maybe Resolution)
+    "resolutions" :> Get '[JSON] [Entity Resolution] :<|>
+    "resolutions" :> ReqBody '[JSON] Resolution :> Post '[JSON] ResolutionId :<|>
+    "resolutions" :> Capture "resolutionid" ResolutionId :> Get '[JSON] (Entity Resolution)
 
 resolutionServer :: ServerT ResolutionAPI App
 resolutionServer = getResolutions :<|> postResolution :<|> getResolution
 
-getResolutions :: App [Resolution]
-getResolutions = return []
+getResolutions :: App [Entity Resolution]
+getResolutions = runDb $ selectList [] []
 
-postResolution :: Resolution -> App Resolution
-postResolution = return
+postResolution :: Resolution -> App ResolutionId
+postResolution = runDb . insert
 
-getResolution :: Int -> App (Maybe Resolution)
-getResolution _ = return Nothing
+getResolution :: ResolutionId -> App (Entity Resolution)
+getResolution resolutionId = do
+  resolution <- runDb $ getEntity resolutionId
+  maybe (throwError err404) return resolution
