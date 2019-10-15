@@ -25,10 +25,31 @@ type OrderAPI =
     )
 
 orderServer :: ServerT OrderAPI App
-orderServer = (getOrders :<|> getOrder :<|> postOrder) :<|> (\marketId -> getMarketOrders marketId :<|> getOutcomeOrders marketId)
+orderServer =
+  (
+    getOrders :<|>
+    getOrder :<|>
+    postOrder
+  ) :<|>
+  (
+    \marketId ->
+      getMarketOrders marketId :<|>
+      getOutcomeOrders marketId
+  )
 
 getOrders :: App [Entity Order]
 getOrders = runDb $ selectList [] []
+
+getOrder :: OrderId -> App (Entity Order)
+getOrder orderId = do
+  order <- runDb $ getEntity orderId
+  maybe (throwError err404) return order
+
+postOrder :: Order -> App OrderId
+postOrder order = runDb $ do
+  orderEntity <- insertEntity order
+  executeOrder order
+  return $ entityKey orderEntity
 
 getMarketOrders :: MarketId -> App [Entity Order]
 getMarketOrders marketId = runDb $ selectList [OrderMarketId ==. marketId] []
@@ -41,17 +62,6 @@ getOutcomeOrders marketId outcomeIndex = runDb $
     OrderOutcomeIndex ==. outcomeIndex
   ]
   []
-
-getOrder :: OrderId -> App (Entity Order)
-getOrder orderId = do
-  order <- runDb $ getEntity orderId
-  maybe (throwError err404) return order
-
-postOrder :: Order -> App OrderId
-postOrder order = runDb $ do
-  orderEntity <- insertEntity order
-  executeOrder order
-  return $ entityKey orderEntity
 
 executeOrder :: Order -> SqlPersistT IO (Entity Position)
 executeOrder order = do
