@@ -10,13 +10,19 @@ import Models
 import Servant
 
 type PositionAPI =
-    "positions" :> Get '[JSON] [Entity Position] :<|>
-    "positions" :> Capture "positionid" PositionId :> Get '[JSON] (Entity Position) :<|>
-    "markets" :> Capture "marketid" MarketId :> "positions" :> Get '[JSON] [Entity Position] :<|>
-    "markets" :> Capture "marketid" MarketId :> "positions" :> Capture "outcome_index" OutcomeIndex :> Get '[JSON] (Entity Position)
+    "positions" :>
+    (
+      Get '[JSON] [Entity Position] :<|>
+      Capture "positionid" PositionId :> Get '[JSON] (Entity Position)
+    ) :<|>
+    "markets" :> Capture "marketid" MarketId :> "positions" :>
+    (
+      Get '[JSON] [Entity Position] :<|>
+      Capture "outcome_index" OutcomeIndex :> Get '[JSON] (Entity Position)
+    )
 
 positionServer :: ServerT PositionAPI App
-positionServer = getPositions :<|> getPosition :<|> getMarketPositions :<|> getMarketPosition
+positionServer = (getPositions :<|> getPosition) :<|> (\marketId -> getMarketPositions marketId :<|> getMarketPosition marketId)
 
 getPositions :: App [Entity Position]
 getPositions = runDb $ selectList [] []

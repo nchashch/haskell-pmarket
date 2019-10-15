@@ -12,14 +12,20 @@ import Servant
 
 -- Should require authentication and authorization
 type OrderAPI =
-    "orders" :> Get '[JSON] [Entity Order] :<|>
-    "markets" :> Capture "marketid" MarketId :> "orders" :> Get '[JSON] [Entity Order] :<|>
-    "markets" :> Capture "marketid" MarketId :> "outcomes" :> Capture "outcome_index" OutcomeIndex :> "orders" :> Get '[JSON] [Entity Order] :<|>
-    "orders" :> Capture "orderid" OrderId :> Get '[JSON] (Entity Order) :<|>
-    "orders" :> ReqBody '[JSON] Order :> Post '[JSON] OrderId
+    "orders" :>
+    (
+      Get '[JSON] [Entity Order] :<|>
+      Capture "orderid" OrderId :> Get '[JSON] (Entity Order) :<|>
+      ReqBody '[JSON] Order :> Post '[JSON] OrderId
+    ) :<|>
+    "markets" :> Capture "marketid" MarketId :>
+    (
+      "orders" :> Get '[JSON] [Entity Order] :<|>
+      "outcomes" :> Capture "outcome_index" OutcomeIndex :> "orders" :> Get '[JSON] [Entity Order]
+    )
 
 orderServer :: ServerT OrderAPI App
-orderServer = getOrders :<|> getMarketOrders :<|> getOutcomeOrders :<|> getOrder :<|> postOrder
+orderServer = (getOrders :<|> getOrder :<|> postOrder) :<|> (\marketId -> getMarketOrders marketId :<|> getOutcomeOrders marketId)
 
 getOrders :: App [Entity Order]
 getOrders = runDb $ selectList [] []

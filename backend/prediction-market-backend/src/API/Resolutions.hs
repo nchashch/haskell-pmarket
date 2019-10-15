@@ -10,9 +10,13 @@ import Models
 import Servant
 
 type ResolutionAPI =
-    "resolutions" :> Get '[JSON] [Entity Resolution] :<|>
-    "resolutions" :> ReqBody '[JSON] Resolution :> Post '[JSON] ResolutionId :<|>
-    "resolutions" :> Capture "resolutionid" ResolutionId :> Get '[JSON] (Entity Resolution)
+    "resolutions" :>
+    (
+      Get '[JSON] [Entity Resolution] :<|>
+      ReqBody '[JSON] Resolution :> Post '[JSON] ResolutionId :<|>
+      Capture "resolutionid" ResolutionId :> Get '[JSON] (Entity Resolution)
+    )
+
 
 resolutionServer :: ServerT ResolutionAPI App
 resolutionServer = getResolutions :<|> postResolution :<|> getResolution

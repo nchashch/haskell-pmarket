@@ -10,11 +10,14 @@ import Models
 import Config
 import Servant
 
+-- Should require authentication and authorization
 type MarketAPI =
-    "markets" :> Get '[JSON] [Entity Market] :<|>
-    -- Should require authentication and authorization
-    "markets" :> ReqBody '[JSON] Market :> Post '[JSON] MarketId :<|>
-    "markets" :> Capture "marketid" MarketId :> Get '[JSON] (Entity Market)
+    "markets" :>
+    (
+      Get '[JSON] [Entity Market] :<|>
+      ReqBody '[JSON] Market :> Post '[JSON] MarketId :<|>
+      Capture "marketid" MarketId :> Get '[JSON] (Entity Market)
+    )
 
 marketServer :: ServerT MarketAPI App
 marketServer = getMarkets :<|> postMarket :<|> getMarket

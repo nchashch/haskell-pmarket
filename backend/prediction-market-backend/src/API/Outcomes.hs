@@ -9,12 +9,18 @@ import Models
 import Servant
 
 type OutcomeAPI =
-  "markets" :> Capture "marketid" MarketId :> "outcomes" :> Get '[JSON] [Entity Outcome] :<|>
-  "markets" :> Capture "marketid" MarketId :> "outcomes" :> Capture "outcome_index" OutcomeIndex :> Get '[JSON] (Entity Outcome) :<|>
+  "markets" :> Capture "marketid" MarketId :> "outcomes" :>
+  (
+    Get '[JSON] [Entity Outcome] :<|>
+    Capture "outcome_index" OutcomeIndex :> Get '[JSON] (Entity Outcome)
+  ) :<|>
   "outcomes" :> Capture "outcomeid" OutcomeId :> Get '[JSON] (Entity Outcome)
 
 outcomeServer :: ServerT OutcomeAPI App
-outcomeServer = getMarketOutcomes :<|> getMarketOutcome :<|> getOutcome
+outcomeServer = (\marketId ->
+                    getMarketOutcomes marketId :<|>
+                    getMarketOutcome marketId) :<|>
+                getOutcome
 
 getMarketOutcomes :: MarketId -> App [Entity Outcome]
 getMarketOutcomes marketId = runDb $ selectList [OutcomeMarketId ==. marketId] []
