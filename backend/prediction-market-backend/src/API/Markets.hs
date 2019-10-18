@@ -15,12 +15,12 @@ type MarketAPI =
     "markets" :>
     (
       Get '[JSON] [Entity Market] :<|>
-      ReqBody '[JSON] Market :> Post '[JSON] MarketId :<|>
-      Capture "marketid" MarketId :> Get '[JSON] (Entity Market)
+      Capture "marketid" MarketId :> Get '[JSON] (Entity Market) :<|>
+      ReqBody '[JSON] Market :> Post '[JSON] MarketId
     )
 
 marketServer :: ServerT MarketAPI App
-marketServer = getMarkets :<|> postMarket :<|> getMarket
+marketServer = getMarkets :<|> getMarket :<|> postMarket
 
 getMarkets :: App [Entity Market]
 getMarkets = runDb $ selectList [] []

@@ -2,7 +2,7 @@
 {-# LANGUAGE DeriveFunctor #-}
 module Config where
 
-import Control.Monad.Error (MonadError)
+import Control.Monad.Except (MonadError)
 import Control.Monad.Reader (MonadReader, ReaderT)
 import Control.Monad.IO.Class (MonadIO)
 import Database.Persist.Postgresql (ConnectionPool, ConnectionString, createPostgresqlPool)
