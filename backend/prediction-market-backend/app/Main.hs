@@ -19,10 +19,14 @@ import API
 
 main :: IO ()
 main = do
-  putStrLn "Prediction market backend server is running."
+  putStrLn "Starting up prediction market backend server"
   let connectionString = "host=localhost dbname=postgres user=postgres password=postgres"
   pool <- runStderrLoggingT $ createPostgresqlPool connectionString 1
+  putStrLn "Running database migrations"
   runSqlPool (runMigration migrateAll) pool
+  putStrLn "Migrations were run"
+  putStrLn "Server started successfully"
   let cfg = Config pool
 
   run 8080 $ predictionMarketApp cfg
+  putStrLn "Shutting down prediction market backend server"
